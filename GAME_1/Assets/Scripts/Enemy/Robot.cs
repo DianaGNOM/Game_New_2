@@ -1,120 +1,21 @@
-/*
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Rendering;
-
-public class Enemy : MonoBehaviour
-{
-    public float moveSpeed = 2f; // Скорость движения врага
-    public float attackRadius = 1.5f; // Радиус атаки
-    public float returnRadius = 7f; // Радиус преследования
-    public float attackDamage = 10f; // Урон от атаки
-    public float attackCooldown = 1f; // Время между атаками
-
-    public Player playerScript;
-    private Vector3 shotpos;
-    private Transform player; // Ссылка на игрока
-    private float lastAttackTime; // Время последней атаки
-    private Rigidbody2D rb; // Rigidbody2D для движения
-    private Vector3 startposition;
-
-    public float health_enemy = 100f;
-
-    private void Awake()
-    {
-        rb = GetComponent<Rigidbody2D>();
-    }
-    private void Start()
-    {
-        startposition = transform.position;
-        player = GameObject.FindGameObjectWithTag("Player").transform; // Находим игрока по тегу
-    }
-    private void Update()
-    {
-        MoveTowardsPlayer();
-
-        if (Vector2.Distance(transform.position, player.position) < attackRadius)
-        {
-            AttackPlayer();
-        }
-    }
-
-    private void MoveTowardsPlayer()
-    {
-        if (Vector2.Distance(transform.position, player.position) < returnRadius)
-        {
-            Vector2 direction = (player.position - transform.position).normalized;
-            rb.velocity = direction * moveSpeed; 
-        }
-        else
-        {
-            rb.MovePosition(startposition); //Идём к начальной точке
-        }
-    }
-
-    private void AttackPlayer()
-    {
-        if (Time.time >= lastAttackTime + attackCooldown)
-        {
-            /*
-            Vector2 dir_shoot = player.position - transform.position;
-            if (dir_shoot.x != 0)
-                dir_shoot.x = dir_shoot.x / Mathf.Abs(dir_shoot.x);
-            if (dir_shoot.y != 0)
-                dir_shoot.y = dir_shoot.y / Mathf.Abs(dir_shoot.y);
-            RaycastHit2D hit = Physics2D.Raycast(shotpos, dir_shoot);
-            if (hit.collider.gameObject.tag == "Player")
-            {
-                Player pl = hit.collider.GetComponent<Player>();
-                pl.TakeDamage_hero(attackDamage);
-            }
-            
-            if (playerScript != null)
-            {
-                playerScript.TakeDamage_hero(attackDamage);
-            }
-            Debug.Log("Attack! Damage: " + attackDamage);
-            lastAttackTime = Time.time;
-        }
-    }
-    public void TakeDamage_enemy(float damage)
-    {
-        health_enemy -= damage; // Уменьшаем здоровье
-        Debug.Log("Enemy takes damage: " + damage + ". Current health: " + health_enemy);
-
-        if (health_enemy <= 0)
-        {
-            Die(); // Вызываем метод смерти, если здоровье ниже или равно нулю
-        }
-    }
-    private void Die()
-    {
-        Debug.Log("Enemy has died!");
-        // Логика смерти врага (например, перезагрузка сцены, анимации и т.д.)
-    }
-}
-*/
-
-
-
-
-
-
 using System.Collections;
 using UnityEngine;
 public class Robot : MonoBehaviour
 {
-    public float moveSpeed = 2f; // Скорость движения врага
-    public float attackRange = 1.5f; // Дальность атаки
-    public float attackDamage = 10f; // Урон от атаки
-    public float attackCooldown = 1f; // Время между атаками
-    public float chaseDistance = 5f; // Дальность преследования
-    public float stopDistance = 1f; // Дистанция, на которой враг останавливается перед игроком
-    public float health_enemy = 100f; // Здоровье врага
-    public float shootingRange = 10f; // Максимальная дистанция для стрельбы
+    private float moveSpeed = 2f; // Скорость движения врага
+    private float attackDamage = 10f; // Урон от атаки
+    private float attackCooldown = 1f; // Время между атаками
+    private float agroRange = 5f; // Дистанция, при которой враг начинает атаковать игрока
+    private float chaseDistance = 15f; // Дальность преследования
+    private float shootingRange = 10f; // Максимальная дистанция для стрельбы
+    private float health_enemy = 100f; // Здоровье врага
     public Vector2 directionToPlayer;
+    public Vector2 shootingDirection;
+    public float distanceToPlayer;
     public float distanceToStart;
+    public bool isAttacking = false;
+    public bool isReturning = false;
+    public bool isMoving = false;
     private bool Left_1;
     private bool Right_1;
     private bool Left;
@@ -140,79 +41,123 @@ public class Robot : MonoBehaviour
     }
     void Update()
     {
-        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+        distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
-        // Проверяем, находится ли игрок в пределах расстояния преследования
-        if (distanceToPlayer < chaseDistance)
+        if (distanceToPlayer < agroRange) { isAttacking = true; }
+        if (distanceToPlayer > shootingRange) { isAttacking = false; }
+
+        if (isAttacking == true)
         {
-            MoveTowardsPlayer();
-
-            // Если игрок близок к врагу, атакуем
-            if (distanceToPlayer < attackRange)
-            {
-                AttackPlayer();
-
-            }
+            AttackPlayer();
         }
         else
         {
-            // Если игрок далеко, возвращаемся на начальную позицию
-            ReturnToStartingPosition();
-        }
-    }
-    void MoveTowardsPlayer()
-    {
-        // Получаем направление к игроку
-        Vector2 direction = (player.position - transform.position).normalized;
-
-        // Проверяем расстояние до игрока
-        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
-
-        // Двигаемся только если игрок не слишком близко (в пределах stopDistance)
-        if (distanceToPlayer > stopDistance)
-        {
-            //rb.velocity = direction * moveSpeed; // Перемещаемся к игроку
-            if (Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
+            if (distanceToPlayer < chaseDistance)
             {
-                // Перемещаем по оси X
-                rb.velocity = new Vector3(Mathf.Sign(direction.x) * moveSpeed, 0, 0);
+                MoveTowardsPlayer();
+
             }
             else
             {
-                // Перемещаем по оси Y
-                rb.velocity = new Vector3(0, Mathf.Sign(direction.y) * moveSpeed, 0);
+                ReturnToStartingPosition();
+
             }
         }
-        else
-        {
-            rb.velocity = Vector2.zero; // Останавливаемся, если слишком близко
-        }
-        MoveMainEnemy();
     }
     void AttackPlayer()
     {
+        Left = false;
+        Right = false;
+        Up = false;
+        Down = false;
+        Left_1 = false;
+        Right_1 = false;
+        Idle = false;
+
+        float playerX = player.position.x;
+        float playerY = player.position.y;
+        float enemyX = transform.position.x;
+        float enemyY = transform.position.y;
+        float yDiff = Mathf.Abs(playerY - enemyY);
+        float xDiff = Mathf.Abs(playerX - enemyX);
+        if ((playerY > enemyY) && (yDiff > xDiff))
+        {
+            Up = true;
+            shootingDirection = Vector2.up;
+            if (playerX > enemyX)
+            {
+                rb.velocity = new Vector2(moveSpeed, 0);
+            }
+            else
+            {
+                rb.velocity = new Vector2(-moveSpeed, 0);
+            }
+        }
+        if ((playerY < enemyY) && (yDiff > xDiff))
+        {
+            Down = true;
+            shootingDirection = -Vector2.up;
+            if (playerX > enemyX)
+            {
+                rb.velocity = new Vector2(moveSpeed, 0);
+            }
+            else
+            {
+                rb.velocity = new Vector2(-moveSpeed, 0);
+            }
+        }
+        if ((playerX > enemyX) && (xDiff > yDiff))
+        {
+            Right = true;
+            shootingDirection = Vector2.right;
+            if (playerY > enemyY)
+            {
+                rb.velocity = new Vector2(0, moveSpeed);
+            }
+            else
+            {
+                rb.velocity = new Vector2(0, -moveSpeed);
+            }
+        }
+        if ((playerX < enemyX) && (xDiff > yDiff))
+        {
+            Left = true;
+            shootingDirection = -Vector2.right;
+            if (playerY > enemyY)
+            {
+                rb.velocity = new Vector2(0, moveSpeed);
+            }
+            else
+            {
+                rb.velocity = new Vector2(0, -moveSpeed);
+            }
+        }
+        animator.SetBool("Left_1", Left_1);
+        animator.SetBool("Right_1", Right_1);
+        animator.SetBool("At_right", Right);
+        animator.SetBool("At_left", Left);
+        animator.SetBool("At_up", Up);
+        animator.SetBool("At_down", Down);
+        animator.SetBool("Idle", Idle);
+
         if (Time.time >= lastAttackTime + attackCooldown)
         {
-            // Тут можно добавить логику, чтобы задать урон игроку
-            rb.velocity = Vector2.zero;
-            directionToPlayer = (player.position - transform.position).normalized;
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, directionToPlayer, shootingRange);
-            MoveAttack();
-            //if (hit.collider.gameObject.tag == "Player")
-            //{
-            Debug.Log("Attack! Damage: " + attackDamage);
-            //}
+            RaycastHit2D hit = Physics2D.Raycast(shootpoint.position, shootingDirection);
+            if (hit.collider.gameObject.tag == "Player")
+            {
+                Debug.Log("Attack! Damage: " + attackDamage);
+            }
             lastAttackTime = Time.time;
         }
     }
     public void TakeDamage_enemy(float damage)
     {
-        health_enemy -= damage; // Уменьшаем здоровье
+        health_enemy -= damage;
         Debug.Log("Enemy takes damage: " + damage + ". Current health: " + health_enemy);
 
         if (health_enemy <= 0)
         {
-            Die(); // Вызываем метод смерти, если здоровье меньше или равно нулю
+            Die();
         }
     }
     private void Die()
@@ -220,6 +165,23 @@ public class Robot : MonoBehaviour
         Debug.Log("Enemy has died!");
         // Логика смерти врага (например, перезагрузка сцены, анимации и т.д.)
         //Destroy(gameObject); // Удаляем врага из игры
+    }
+
+    void MoveTowardsPlayer()
+    {
+        Vector2 direction = (player.position - transform.position).normalized;
+
+        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+
+        if (distanceToPlayer > agroRange)
+        {
+            rb.velocity = direction * moveSpeed;
+        }
+        else
+        {
+            rb.velocity = Vector2.zero;
+        }
+        AnimationMove();
     }
     void ReturnToStartingPosition()
     {
@@ -235,9 +197,9 @@ public class Robot : MonoBehaviour
         {
             rb.velocity = Vector2.zero; // Останавливаемся, как только достигли начальной позиции
         }
-        MoveMainEnemy();
+        AnimationMove();
     }
-    void MoveMainEnemy()
+    void AnimationMove()
     {
         Left = false;
         Right = false;
@@ -246,13 +208,13 @@ public class Robot : MonoBehaviour
         Left_1 = false;
         Right_1 = false;
         Idle = false;
-        Vector3 distance = player.position - transform.position;
+        Vector2 distance = player.position - transform.position;
         distanceToStart = Vector2.Distance(transform.position, startingPosition);
         if (distance.x < 0)
         {
             Left_1 = true;
         }
-        if (distance.x > 0)
+        else
         {
             Right_1 = true;
         }
@@ -269,54 +231,6 @@ public class Robot : MonoBehaviour
         animator.SetBool("At_up", Up);
         animator.SetBool("At_down", Down);
         animator.SetBool("Idle", Idle);
-    }
-    void MoveAttack()
-    {
-        directionToPlayer = player.position - transform.position;
-        if (Mathf.Abs(directionToPlayer.x) != 0)
-            directionToPlayer.x /= Mathf.Abs(directionToPlayer.x);
-        if (Mathf.Abs(directionToPlayer.y) != 0)
-            directionToPlayer.y /= Mathf.Abs(directionToPlayer.y);
-        distanceToStart = Vector2.Distance(transform.position, startingPosition);
-        Left = false;
-        Right = false;
-        Up = false;
-        Down = false;
-        Left_1 = false;
-        Right_1 = false;
-        Idle = true;
-        if (directionToPlayer == Vector2.up || directionToPlayer == Vector2.up + Vector2.right || directionToPlayer == Vector2.up - Vector2.right)
-        {
-            Up = true;
-        }
-        if (directionToPlayer == -Vector2.up || directionToPlayer == -Vector2.up + Vector2.right || directionToPlayer == -Vector2.up - Vector2.right)
-        {
-            Down = true;
-        }
-        if (directionToPlayer == Vector2.right)
-        {
-            Right = true;
-        }
-        if (directionToPlayer == -Vector2.right)
-        {
-            Left = true;
-        }
-        if (distanceToStart < 0.1f)
-        {
-            Idle = true;
-            Left = false;
-            Right = false;
-            Up = false;
-            Down = false;
-        }
-        animator.SetBool("Left_1", Left_1);
-        animator.SetBool("Right_1", Right_1);
-        animator.SetBool("At_right", Right);
-        animator.SetBool("At_left", Left);
-        animator.SetBool("At_up", Up);
-        animator.SetBool("At_down", Down);
-        animator.SetBool("Idle", Idle);
-        Debug.Log("Выполнено!");
     }
 }
 
