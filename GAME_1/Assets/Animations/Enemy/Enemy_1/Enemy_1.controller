@@ -242,6 +242,12 @@ AnimatorStateTransition:
   - m_ConditionMode: 1
     m_ConditionEvent: At_left
     m_EventTreshold: 0
+  - m_ConditionMode: 2
+    m_ConditionEvent: At_up
+    m_EventTreshold: 0
+  - m_ConditionMode: 2
+    m_ConditionEvent: At_down
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -7092283714169118867}
   m_Solo: 0
@@ -264,11 +270,8 @@ AnimatorStateTransition:
   m_PrefabAsset: {fileID: 0}
   m_Name: 
   m_Conditions:
-  - m_ConditionMode: 2
-    m_ConditionEvent: Left_1
-    m_EventTreshold: 0
-  - m_ConditionMode: 2
-    m_ConditionEvent: Right_1
+  - m_ConditionMode: 1
+    m_ConditionEvent: Idle
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 1304546374813711048}
@@ -506,11 +509,8 @@ AnimatorStateTransition:
   m_PrefabAsset: {fileID: 0}
   m_Name: 
   m_Conditions:
-  - m_ConditionMode: 2
-    m_ConditionEvent: Right_1
-    m_EventTreshold: 0
-  - m_ConditionMode: 2
-    m_ConditionEvent: Left_1
+  - m_ConditionMode: 1
+    m_ConditionEvent: Idle
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 1304546374813711048}
@@ -594,6 +594,12 @@ AnimatorController:
     m_DefaultBool: 0
     m_Controller: {fileID: 9100000}
   - m_Name: At_down
+    m_Type: 4
+    m_DefaultFloat: 0
+    m_DefaultInt: 0
+    m_DefaultBool: 0
+    m_Controller: {fileID: 9100000}
+  - m_Name: Idle
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
@@ -857,6 +863,9 @@ AnimatorStateTransition:
   - m_ConditionMode: 2
     m_ConditionEvent: At_down
     m_EventTreshold: 0
+  - m_ConditionMode: 1
+    m_ConditionEvent: Idle
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 1304546374813711048}
   m_Solo: 0
@@ -908,13 +917,10 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 2
-    m_ConditionEvent: Left_1
-    m_EventTreshold: 0
-  - m_ConditionMode: 2
-    m_ConditionEvent: Right_1
-    m_EventTreshold: 0
-  - m_ConditionMode: 2
     m_ConditionEvent: At_up
+    m_EventTreshold: 0
+  - m_ConditionMode: 1
+    m_ConditionEvent: Idle
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 1304546374813711048}
@@ -1065,6 +1071,9 @@ AnimatorStateTransition:
     m_EventTreshold: 0
   - m_ConditionMode: 2
     m_ConditionEvent: At_right
+    m_EventTreshold: 0
+  - m_ConditionMode: 1
+    m_ConditionEvent: Idle
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 1304546374813711048}
@@ -1240,6 +1249,9 @@ AnimatorStateTransition:
   - m_ConditionMode: 2
     m_ConditionEvent: At_left
     m_EventTreshold: 0
+  - m_ConditionMode: 1
+    m_ConditionEvent: Idle
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 1304546374813711048}
   m_Solo: 0
@@ -1267,6 +1279,12 @@ AnimatorStateTransition:
     m_EventTreshold: 0
   - m_ConditionMode: 1
     m_ConditionEvent: At_right
+    m_EventTreshold: 0
+  - m_ConditionMode: 2
+    m_ConditionEvent: At_down
+    m_EventTreshold: 0
+  - m_ConditionMode: 2
+    m_ConditionEvent: At_up
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 8417435150318783335}

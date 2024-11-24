@@ -113,13 +113,15 @@ public class Robot : MonoBehaviour
     public float stopDistance = 1f; // Дистанция, на которой враг останавливается перед игроком
     public float health_enemy = 100f; // Здоровье врага
     public float shootingRange = 10f; // Максимальная дистанция для стрельбы
-    public Vector3 directionToPlayer;
+    public Vector2 directionToPlayer;
+    public float distanceToStart;
     private bool Left_1;
     private bool Right_1;
     private bool Left;
     private bool Right;
     private bool Up;
     private bool Down;
+    private bool Idle;
 
     public Transform shootpoint;
 
@@ -148,8 +150,8 @@ public class Robot : MonoBehaviour
             // Если игрок близок к врагу, атакуем
             if (distanceToPlayer < attackRange)
             {
-                rb.velocity = Vector2.zero;
                 AttackPlayer();
+
             }
         }
         else
@@ -192,10 +194,14 @@ public class Robot : MonoBehaviour
         if (Time.time >= lastAttackTime + attackCooldown)
         {
             // Тут можно добавить логику, чтобы задать урон игроку
+            rb.velocity = Vector2.zero;
             directionToPlayer = (player.position - transform.position).normalized;
             RaycastHit2D hit = Physics2D.Raycast(transform.position, directionToPlayer, shootingRange);
-            Debug.Log("Attack! Damage: " + attackDamage);
             MoveAttack();
+            //if (hit.collider.gameObject.tag == "Player")
+            //{
+            Debug.Log("Attack! Damage: " + attackDamage);
+            //}
             lastAttackTime = Time.time;
         }
     }
@@ -218,7 +224,7 @@ public class Robot : MonoBehaviour
     void ReturnToStartingPosition()
     {
         // Возвращаемся на начальное положение
-        float distanceToStart = Vector2.Distance(transform.position, startingPosition);
+        distanceToStart = Vector2.Distance(transform.position, startingPosition);
 
         if (distanceToStart > 0.1f) // Для предотвращения дрожания
         {
@@ -239,8 +245,9 @@ public class Robot : MonoBehaviour
         Down = false;
         Left_1 = false;
         Right_1 = false;
+        Idle = false;
         Vector3 distance = player.position - transform.position;
-        float distanceToStart = Vector2.Distance(transform.position, startingPosition);
+        distanceToStart = Vector2.Distance(transform.position, startingPosition);
         if (distance.x < 0)
         {
             Left_1 = true;
@@ -251,11 +258,17 @@ public class Robot : MonoBehaviour
         }
         if (distanceToStart < 0.1f)
         {
+            Idle = true;
             Left_1 = false;
             Right_1 = false;
         }
         animator.SetBool("Left_1", Left_1);
         animator.SetBool("Right_1", Right_1);
+        animator.SetBool("At_right", Right);
+        animator.SetBool("At_left", Left);
+        animator.SetBool("At_up", Up);
+        animator.SetBool("At_down", Down);
+        animator.SetBool("Idle", Idle);
     }
     void MoveAttack()
     {
@@ -264,32 +277,46 @@ public class Robot : MonoBehaviour
             directionToPlayer.x /= Mathf.Abs(directionToPlayer.x);
         if (Mathf.Abs(directionToPlayer.y) != 0)
             directionToPlayer.y /= Mathf.Abs(directionToPlayer.y);
+        distanceToStart = Vector2.Distance(transform.position, startingPosition);
         Left = false;
         Right = false;
         Up = false;
         Down = false;
         Left_1 = false;
         Right_1 = false;
-        if (directionToPlayer == Vector3.up)
+        Idle = true;
+        if (directionToPlayer == Vector2.up || directionToPlayer == Vector2.up + Vector2.right || directionToPlayer == Vector2.up - Vector2.right)
         {
             Up = true;
         }
-        if (directionToPlayer == -Vector3.up)
+        if (directionToPlayer == -Vector2.up || directionToPlayer == -Vector2.up + Vector2.right || directionToPlayer == -Vector2.up - Vector2.right)
         {
             Down = true;
         }
-        if (directionToPlayer == Vector3.right)
+        if (directionToPlayer == Vector2.right)
         {
             Right = true;
         }
-        if (directionToPlayer == -Vector3.right)
+        if (directionToPlayer == -Vector2.right)
         {
             Left = true;
         }
+        if (distanceToStart < 0.1f)
+        {
+            Idle = true;
+            Left = false;
+            Right = false;
+            Up = false;
+            Down = false;
+        }
+        animator.SetBool("Left_1", Left_1);
+        animator.SetBool("Right_1", Right_1);
         animator.SetBool("At_right", Right);
         animator.SetBool("At_left", Left);
         animator.SetBool("At_up", Up);
         animator.SetBool("At_down", Down);
+        animator.SetBool("Idle", Idle);
+        Debug.Log("Выполнено!");
     }
 }
 
