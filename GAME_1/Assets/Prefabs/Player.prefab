@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 604706046475457379}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Player
+  m_TagString: Player_1
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -168,7 +168,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 2
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 0
@@ -215,7 +215,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.000000059604645, y: -0.94379103}
+  m_Offset: {x: 0.000000059604645, y: -0.0234617}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -226,7 +226,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.9999999, y: 0.21774703}
+  m_Size: {x: 0.9999999, y: 2.0584056}
   m_EdgeRadius: 0
 --- !u!114 &7563152448818389285
 MonoBehaviour:
@@ -241,9 +241,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed_player: 7
+  health_hero: 100
   isShooting: 0
   _gun: {fileID: 1034221721135269178}
-  isAttacking: 0
 --- !u!114 &604706046475457379
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -364,8 +364,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _shotpoint: {fileID: 5008085531307204358}
-  dam: 1
+  attackCooldown_hero: 1
+  dam: 10
   DamageEffect: {fileID: 0}
+  isAttacking: 0
+  isCollider: 0
 --- !u!114 &556262904158403613
 MonoBehaviour:
   m_ObjectHideFlags: 0

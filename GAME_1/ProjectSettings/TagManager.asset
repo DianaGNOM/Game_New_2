@@ -4,6 +4,7 @@
 TagManager:
   serializedVersion: 2
   tags:
+  - Player_1
   - Enemy
   layers:
   - Default
@@ -12,8 +13,8 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
+  - IgnoreEnemy
+  - IgnorePlayer
   - 
   - 
   - 

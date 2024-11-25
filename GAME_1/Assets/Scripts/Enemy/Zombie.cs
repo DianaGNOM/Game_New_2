@@ -9,22 +9,43 @@ public class Zombie : MonoBehaviour
     public float attackCooldown = 1f; // Время между атаками
     public float chaseDistance = 5f; // Расстояние преследования
     public float stopDistance = 2f; // Расстояние отставания
+    public float distanceToPlayer;
 
     private Transform player; // Ссылка на игрока
     private float lastAttackTime; // Время последней атаки
     private Rigidbody2D rb; // Rigidbody2D для движения
     private Vector3 startingPosition; // Начальная позиция врага
+    private Animator anim;
+
+    public bool IsAttacking;
+    public bool IsAttackUp;
+    public bool IsAttackDown;
+    public bool IsAttackLeft;
+    public bool IsAttackRight;
+    public bool IsWalkUp;
+    public bool IsWalkDown;
+    public bool IsWalkLeft;
+    public bool IsWalkRight;
+    public bool IsDeathUp;
+    public bool IsDeathDown;
+    public bool IsDeathLeft;
+    public bool IsDeathRight;
+    public bool IsStop;
+
+    private bool Up;
+    private bool Down;
 
     void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player").transform; // Находим игрока по тегу
-        rb = GetComponent<Rigidbody2D>(); // Получаем компонент Rigidbody2D
-        startingPosition = transform.position; // Запоминаем начальную позицию врага
+        player = GameObject.FindGameObjectWithTag("Player").transform; 
+        rb = GetComponent<Rigidbody2D>(); 
+        startingPosition = transform.position;
+        anim = GetComponent<Animator>();
     }
 
     void Update()
     {
-        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+        distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
         // Проверяем, находится ли игрок в пределах расстояния преследования
         if (distanceToPlayer < chaseDistance)
@@ -48,7 +69,7 @@ public class Zombie : MonoBehaviour
     {
         if (player != null)
         {
-            float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+            distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
             // Двигаемся только если игрок не слишком близко
             if (distanceToPlayer > stopDistance)
@@ -71,12 +92,30 @@ public class Zombie : MonoBehaviour
     {
         if (Time.time >= lastAttackTime + attackCooldown)
         {
-            // Тут можно добавить логику, чтобы задать урон игроку
-            Debug.Log("Attack! Damage: " + attackDamage);
+            if (distanceToPlayer < 1f)
+            {
+                rb.velocity = Vector3.zero;
+                IsAttacking = true;
+            }
+            else
+            {
+                Vector2 direction = (player.position - transform.position).normalized;
+                rb.velocity = direction * moveSpeed;
+            }
             lastAttackTime = Time.time;
         }
     }
-
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Player_1")
+        {
+            if (collision.gameObject.GetComponent<Player>() != null)
+            {
+                Debug.Log("Attack! Damage: " + attackDamage);
+                collision.gameObject.GetComponent<Player>().TakeDamage_hero(attackDamage);
+            }
+        }
+    }
     void ReturnToStartingPosition()
     {
         // Возвращаемся на начальное положение
@@ -91,5 +130,76 @@ public class Zombie : MonoBehaviour
         {
             rb.velocity = Vector2.zero; // Останавливаемся, как только достигли начальной позиции
         }
+    }
+    //функция смены анимаций в апдейт ещё не добавлена
+    void Animation()
+    {
+        Up = false;
+        Down = false;
+        Vector2 distance = player.position - transform.position;
+        float distanceToStart = Vector2.Distance(transform.position, startingPosition);
+        IsAttackUp = false;
+        IsAttackDown = false;
+        IsAttackLeft = false;
+        IsAttackRight = false;
+        IsWalkUp = false;
+        IsWalkDown = false;
+        IsWalkLeft = false;
+        IsWalkRight = false;
+        IsDeathUp = false;
+        IsDeathDown = false;
+        IsDeathLeft = false;
+        IsDeathRight = false;
+        IsStop = false;
+        if (distanceToStart < 0.1f)
+        {
+            IsAttackUp = IsAttackDown = IsAttackLeft = IsAttackRight = false;
+            IsWalkUp = IsWalkDown = IsWalkLeft = IsWalkRight = false;
+            IsDeathUp = IsDeathDown = IsDeathLeft = IsDeathRight = false;
+            IsStop = true;
+        }
+        if (distance.y < 0)
+        {
+            Down = true;
+            if (IsAttacking == true)
+                IsAttackDown = true;
+            else
+                IsWalkDown = true;
+        }
+        if (distance.y > 0)
+        {
+            Up = true;
+            if (IsAttacking == true)
+                IsAttackUp = true;
+            else
+                IsWalkUp = true;
+        }
+        if (Up == false && Down == false)
+        {
+            if (distance.x < 0)
+            { 
+                if (IsAttacking == true)
+                    IsAttackLeft = true;
+                else
+                    IsWalkLeft = true;
+            }
+            if (distance.x > 0)
+            { 
+                if (IsAttacking == true)
+                    IsAttackRight = true;
+                else
+                    IsWalkRight = true;
+            }
+        }
+        anim.SetBool("Up_w", IsWalkUp);
+        anim.SetBool("Down_w", IsWalkDown);
+        anim.SetBool("Right_w", IsWalkRight);
+        anim.SetBool("Left_w", IsWalkLeft);
+        anim.SetBool("Idle_zom", IsStop);
+        anim.SetBool("Up_a", IsAttackUp);
+        anim.SetBool("Down_a", IsAttackDown);
+        anim.SetBool("Left_a", IsAttackLeft);
+        anim.SetBool("Right_a", IsAttackRight);
+        //код для перехода к анимации смерти ещё не придуман
     }
 }

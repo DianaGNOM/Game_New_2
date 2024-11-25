@@ -31,15 +31,15 @@ public class Robot : MonoBehaviour
     private Rigidbody2D rb; // Rigidbody2D для движения
     private Animator animator; //Animator для визуализации
     private Vector3 startingPosition; // Начальная позиция врага
-
+    public LayerMask ignoreLayer_1;
     void Start()
     {
         animator = GetComponent<Animator>(); // Получаем компонент Animator
-        player = GameObject.FindGameObjectWithTag("Player").transform; // Находим игрока по тегу
+        player = GameObject.FindGameObjectWithTag("Player_1").transform; // Находим игрока по тегу
         rb = GetComponent<Rigidbody2D>(); // Получаем компонент Rigidbody2D
         startingPosition = transform.position; // Запоминаем начальную позицию врага
     }
-    void Update()
+    void FixedUpdate()
     {
         distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
@@ -142,10 +142,16 @@ public class Robot : MonoBehaviour
 
         if (Time.time >= lastAttackTime + attackCooldown)
         {
-            RaycastHit2D hit = Physics2D.Raycast(shootpoint.position, shootingDirection);
-            if (hit.collider.gameObject.tag == "Player")
+            RaycastHit2D hit = Physics2D.Raycast(shootpoint.position, shootingDirection, Mathf.Infinity, ~ignoreLayer_1);
+            if (hit.collider != null)
             {
-                Debug.Log("Attack! Damage: " + attackDamage);
+                if (hit.collider.tag == "Player_1")
+                {
+                    Player player_1 = hit.collider.GetComponent<Player>();
+                    Debug.Log("Attack! Damage: " + attackDamage);
+                    player_1.TakeDamage_hero(attackDamage);
+                }
+                //Debug.Log("Attack! Damage: " + hit.collider.tag);
             }
             lastAttackTime = Time.time;
         }

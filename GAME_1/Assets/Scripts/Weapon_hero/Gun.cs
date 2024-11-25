@@ -19,6 +19,7 @@ public class Gun : MonoBehaviour
     public GameObject DamageEffect;
     [SerializeField] private bool isAttacking = false;
     [SerializeField] private bool isCollider = false;
+    public LayerMask ignoreLayer_2;
     public bool IsAttacking()
     {
         return isAttacking;
@@ -61,16 +62,16 @@ public class Gun : MonoBehaviour
             if (Time.time >= lastAttack + attackCooldown_hero)
             {
                 isAttacking = true;
-                RaycastHit2D hit = Physics2D.Raycast(_shotpoint.position, _shotpoint_dir);
+                RaycastHit2D hit = Physics2D.Raycast(_shotpoint.position, _shotpoint_dir, Mathf.Infinity, ~ignoreLayer_2);
                 if (hit.collider != null)
                 {
-                    string en = hit.collider.gameObject.tag;
-                    if (en == "Enemy")
+                    if (hit.collider.tag == "Enemy")
                     {
                         Robot enemy = hit.collider.GetComponent<Robot>();
                         Debug.Log("Attack! Damage: " + dam);
                         enemy.TakeDamage_enemy(dam);
                     }
+                    //Debug.Log("Attack! Damage: " + dam + " " + hit.collider.tag);
                     /*
                     isCollider = true;
                     obstacle = Instantiate(DamageEffect, hit.point, Quaternion.identity);
