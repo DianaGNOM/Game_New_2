@@ -1,11 +1,10 @@
 using System.Collections;
 using UnityEngine;
 
-public class Zombie : MonoBehaviour
+public class Zombie : Enemy_1
 {
     public float moveSpeed = 2f; // Скорость движения врага
     public float attackRange = 1.5f; // Дальность атаки
-    public float attackDamage = 10f; // Урон от атаки
     public float attackCooldown = 1f; // Время между атаками
     public float chaseDistance = 5f; // Расстояние преследования
     public float stopDistance = 2f; // Расстояние отставания
@@ -37,7 +36,7 @@ public class Zombie : MonoBehaviour
 
     void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player").transform; 
+        player = GameObject.FindGameObjectWithTag("Player_1").transform; 
         rb = GetComponent<Rigidbody2D>(); 
         startingPosition = transform.position;
         anim = GetComponent<Animator>();
@@ -92,7 +91,8 @@ public class Zombie : MonoBehaviour
     {
         if (Time.time >= lastAttackTime + attackCooldown)
         {
-            if (distanceToPlayer < 1f)
+            distanceToPlayer = Vector2.Distance(transform.position, player.position);
+            if (distanceToPlayer == 0f)
             {
                 rb.velocity = Vector3.zero;
                 IsAttacking = true;
@@ -103,17 +103,6 @@ public class Zombie : MonoBehaviour
                 rb.velocity = direction * moveSpeed;
             }
             lastAttackTime = Time.time;
-        }
-    }
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.tag == "Player_1")
-        {
-            if (collision.gameObject.GetComponent<Player>() != null)
-            {
-                Debug.Log("Attack! Damage: " + attackDamage);
-                collision.gameObject.GetComponent<Player>().TakeDamage_hero(attackDamage);
-            }
         }
     }
     void ReturnToStartingPosition()

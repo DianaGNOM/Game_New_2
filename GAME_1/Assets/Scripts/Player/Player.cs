@@ -10,6 +10,10 @@ public class Player : MonoBehaviour
     public static Player Instance { get; private set; }
     private Rigidbody2D rb;
     private Vector2 inputVector;
+
+    private float lastAttackTime_1;
+    private float attackCooldown_1 = 1f;
+
     [SerializeField] private float speed_player = 3f;
     public float health_hero = 100f;
     private Vector2 speed_to_axis;
@@ -297,5 +301,37 @@ public class Player : MonoBehaviour
     {
         Debug.Log("Player has died!");
         // Логика смерти игрока (например, перезагрузка сцены, анимации и т.д.)
+    }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (Time.time >= lastAttackTime_1 + attackCooldown_1)
+        {
+            if ((collision.gameObject.tag == "Enemy") && (collision.gameObject.GetComponent<Zombie>() != null))
+            {
+                Enemy_1 en = collision.gameObject.GetComponent<Enemy_1>();
+                if (en != null)
+                {
+                    Debug.Log("Attack! Damage: " + en.attackDamage);
+                    TakeDamage_hero(en.attackDamage);
+                }
+            }
+            lastAttackTime_1 = Time.time;
+        }
+    }
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if (Time.time >= lastAttackTime_1 + attackCooldown_1)
+        {
+            if ((collision.gameObject.tag == "Enemy") && (collision.gameObject.GetComponent<Zombie>() != null))
+            {
+                Enemy_1 en = collision.gameObject.GetComponent<Enemy_1>();
+                if (en != null)
+                {
+                    Debug.Log("Attack! Damage: " + en.attackDamage);
+                    TakeDamage_hero(en.attackDamage);
+                }
+            }
+            lastAttackTime_1 = Time.time;
+        }
     }
 }

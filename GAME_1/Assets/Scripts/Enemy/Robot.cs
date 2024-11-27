@@ -1,14 +1,12 @@
 using System.Collections;
 using UnityEngine;
-public class Robot : MonoBehaviour
+public class Robot : Enemy_1
 {
     private float moveSpeed = 2f; // Скорость движения врага
-    private float attackDamage = 10f; // Урон от атаки
     private float attackCooldown = 1f; // Время между атаками
     private float agroRange = 5f; // Дистанция, при которой враг начинает атаковать игрока
     private float chaseDistance = 15f; // Дальность преследования
     private float shootingRange = 10f; // Максимальная дистанция для стрельбы
-    private float health_enemy = 100f; // Здоровье врага
     public Vector2 directionToPlayer;
     public Vector2 shootingDirection;
     public float distanceToPlayer;
@@ -156,23 +154,6 @@ public class Robot : MonoBehaviour
             lastAttackTime = Time.time;
         }
     }
-    public void TakeDamage_enemy(float damage)
-    {
-        health_enemy -= damage;
-        Debug.Log("Enemy takes damage: " + damage + ". Current health: " + health_enemy);
-
-        if (health_enemy <= 0)
-        {
-            Die();
-        }
-    }
-    private void Die()
-    {
-        Debug.Log("Enemy has died!");
-        // Логика смерти врага (например, перезагрузка сцены, анимации и т.д.)
-        //Destroy(gameObject); // Удаляем врага из игры
-    }
-
     void MoveTowardsPlayer()
     {
         Vector2 direction = (player.position - transform.position).normalized;
