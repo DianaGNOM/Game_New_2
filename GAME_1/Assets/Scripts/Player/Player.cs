@@ -23,6 +23,7 @@ public class Player : MonoBehaviour
     private bool isRunningDown;
     private bool isRunningLeftRight;
     private bool rev;
+    private bool isAttacking_ = false;
     private bool isAttackingUp;
     private bool isAttackingDown;
     private bool isAttackingLeft;
@@ -38,6 +39,10 @@ public class Player : MonoBehaviour
     private bool isShootingLeft;
     private bool isShootingRight;
     public GameObject _gun;
+    public bool IsAttacking_()
+    {
+        return isAttacking_;
+    }
     public bool IsRunningUp()
     {
         return isRunningUp;
@@ -304,6 +309,7 @@ public class Player : MonoBehaviour
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        isAttacking_= true;
         if (Time.time >= lastAttackTime_1 + attackCooldown_1)
         {
             if ((collision.gameObject.tag == "Enemy") && (collision.gameObject.GetComponent<Zombie>() != null))
@@ -333,5 +339,9 @@ public class Player : MonoBehaviour
             }
             lastAttackTime_1 = Time.time;
         }
+    }
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        isAttacking_ = false;
     }
 }

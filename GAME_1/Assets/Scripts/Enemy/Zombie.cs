@@ -4,12 +4,13 @@ using UnityEngine;
 public class Zombie : Enemy_1
 {
     public float moveSpeed = 2f; // Скорость движения врага
-    public float attackRange = 1.5f; // Дальность атаки
+    public float attackRange = 2.5f; // Дальность атаки
     public float attackCooldown = 1f; // Время между атаками
     public float chaseDistance = 5f; // Расстояние преследования
-    public float stopDistance = 1f; // Расстояние отставания
+    public float stopDistance = 0.7f; 
     public float distanceToPlayer;
     public float distanceToStart;
+    public Vector2 distance;
 
     private Transform player; // Ссылка на игрока
     private Rigidbody2D rb; // Rigidbody2D для движения
@@ -46,24 +47,27 @@ public class Zombie : Enemy_1
     void Update()
     {
         distanceToPlayer = Vector2.Distance(transform.position, player.position);
+        distance = player.position - transform.position;
 
         // Проверяем, находится ли игрок в пределах расстояния преследования
         if (distanceToPlayer < chaseDistance)
         {
             MoveTowardsPlayer();
+            Animation();
 
             // Если игрок близок к врагу, атакуем
-            if (distanceToPlayer < attackRange)
+            if ((distanceToPlayer < attackRange))
             {
                 AttackPlayer();
+                Animation();
             }
         }
         else
         {
             // Если игрок далеко, возвращаемся на начальную позицию
             ReturnToStartingPosition();
+            Animation();
         }
-        Animation();
     }
 
     void MoveTowardsPlayer()
@@ -94,20 +98,18 @@ public class Zombie : Enemy_1
 
     void AttackPlayer()
     {
-        distanceToPlayer = Vector2.Distance(transform.position, player.position);
-        if (distanceToPlayer == 0f)
+        IsAttacking = true;
+        IsWalking = false;
+        //distanceToPlayer = Vector2.Distance(transform.position, player.position);
+        distance = player.position - transform.position;
+        if (Player.Instance.IsAttacking_() == true)
         {
             rb.velocity = Vector3.zero;
-            IsAttacking = true;
-            IsWalking = false;
         }
         else
         {
             Vector2 direction = (player.position - transform.position).normalized;
             rb.velocity = direction * moveSpeed;
-
-            IsWalking = true;
-            IsAttacking = false;
         }
     }
     void ReturnToStartingPosition()
@@ -127,16 +129,18 @@ public class Zombie : Enemy_1
         else
         {
             rb.velocity = Vector2.zero; // Останавливаемся, как только достигли начальной позиции
+            IsWalking = false;
+            IsAttacking = false;
         }
     }
-    //функция смены анимаций в апдейт ещё не добавлена
+    //функция смены анимаций
     void Animation()
     {
-        Up = false;
-        Down = false;
-        Vector2 distance = player.position - transform.position;
+        distance = player.position - transform.position;
         distanceToStart = Vector2.Distance(transform.position, startingPosition);
         distanceToPlayer = Vector2.Distance(transform.position, player.position);
+        Up = false;
+        Down = false;
         IsAttackUp = false;
         IsAttackDown = false;
         IsAttackLeft = false;
@@ -154,40 +158,62 @@ public class Zombie : Enemy_1
             IsAttacking = IsWalking = false;
             IsStop = true;
         }
-        if (distance.y < 0)
+        if ((distance.y < 0) && (Mathf.Abs(distance.y) > 0.9f))
         {
             Down = true;
             if (IsAttacking == true)
+            {
                 IsAttackDown = true;
                 IsWalkDown = false;
+            }
             if (IsWalking == true)
+            {
                 IsWalkDown = true;
                 IsAttackDown = false;
+            }
         }
-        if (distance.y > 0)
+        if ((distance.y > 0) && (Mathf.Abs(distance.y) > 0.9f))
         {
             Up = true;
             if (IsAttacking == true)
+            {
                 IsAttackUp = true;
                 IsWalkUp = false;
+            }
             if (IsWalking == true)
+            { 
                 IsWalkUp = true;
+                IsAttackUp = false;
+            }
         }
         if ((Up == false) && (Down == false))
         {
             if (distance.x < 0)
-            { 
+            {
                 if (IsAttacking == true)
+                {
                     IsAttackLeft = true;
+                    IsWalkLeft = false;
+
+                }
                 if (IsWalking == true)
+                {
                     IsWalkLeft = true;
+                    IsAttackLeft = false;
+                }
             }
             if (distance.x > 0)
             { 
                 if (IsAttacking == true)
+                {
                     IsAttackRight = true;
+                    IsWalkRight = false;
+                }
                 if (IsWalking == true)
+                {
                     IsWalkRight = true;
+                    IsAttackRight = false;
+                }
             }
         }
         anim.SetBool("Up_w", IsWalkUp);

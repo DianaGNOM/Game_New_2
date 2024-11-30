@@ -157,7 +157,9 @@ MonoBehaviour:
   chaseDistance: 5
   stopDistance: 2
   distanceToPlayer: 0
+  distanceToStart: 0
   IsAttacking: 0
+  IsWalking: 0
   IsAttackUp: 0
   IsAttackDown: 0
   IsAttackLeft: 0
@@ -217,7 +219,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.07710266, y: -0.17623758}
+  m_Offset: {x: -0.13217735, y: -0.17623758}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -228,5 +230,5 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.2058411, y: 2.1090631}
+  m_Size: {x: 1.3159904, y: 2.1090631}
   m_EdgeRadius: 0
