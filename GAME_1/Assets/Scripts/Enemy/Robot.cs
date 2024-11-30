@@ -78,6 +78,7 @@ public class Robot : Enemy_1
         float enemyY = transform.position.y;
         float yDiff = Mathf.Abs(playerY - enemyY);
         float xDiff = Mathf.Abs(playerX - enemyX);
+
         if ((playerY > enemyY) && (yDiff > xDiff))
         {
             Up = true;
