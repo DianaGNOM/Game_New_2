@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using System.Net;
 using Unity.VisualScripting;
+using UnityEngine.UIElements;
 
 public class Player : MonoBehaviour
 {
@@ -39,6 +40,7 @@ public class Player : MonoBehaviour
     private bool isShootingLeft;
     private bool isShootingRight;
     public GameObject _gun;
+    public bool IsCollider = false;
     public bool IsAttacking_()
     {
         return isAttacking_;
@@ -307,9 +309,9 @@ public class Player : MonoBehaviour
         Debug.Log("Player has died!");
         // Логика смерти игрока (например, перезагрузка сцены, анимации и т.д.)
     }
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        isAttacking_= true;
+        isAttacking_ = true;
         if (Time.time >= lastAttackTime_1 + attackCooldown_1)
         {
             if ((collision.gameObject.tag == "Enemy") && (collision.gameObject.GetComponent<Zombie>() != null))
@@ -324,7 +326,7 @@ public class Player : MonoBehaviour
             lastAttackTime_1 = Time.time;
         }
     }
-    private void OnCollisionStay2D(Collision2D collision)
+    private void OnTriggerStay2D(Collider2D collision)
     {
         if (Time.time >= lastAttackTime_1 + attackCooldown_1)
         {
@@ -340,7 +342,7 @@ public class Player : MonoBehaviour
             lastAttackTime_1 = Time.time;
         }
     }
-    private void OnCollisionExit2D(Collision2D collision)
+    private void OnTriggerExit2D(Collider2D collision)
     {
         isAttacking_ = false;
     }

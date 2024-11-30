@@ -98,18 +98,20 @@ public class Zombie : Enemy_1
 
     void AttackPlayer()
     {
-        IsAttacking = true;
-        IsWalking = false;
         //distanceToPlayer = Vector2.Distance(transform.position, player.position);
         distance = player.position - transform.position;
         if (Player.Instance.IsAttacking_() == true)
         {
             rb.velocity = Vector3.zero;
+            IsAttacking = true;
+            IsWalking = false;
         }
         else
         {
             Vector2 direction = (player.position - transform.position).normalized;
             rb.velocity = direction * moveSpeed;
+            IsAttacking = false;
+            IsWalking = true;
         }
     }
     void ReturnToStartingPosition()
