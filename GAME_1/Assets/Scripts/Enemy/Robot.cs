@@ -1,9 +1,10 @@
 using System.Collections;
 using UnityEngine;
-public class Robot : Enemy_1
+public class Robot : MonoBehaviour
 {
     private float moveSpeed = 2f; // Скорость движения врага
     private float attackCooldown = 1f; // Время между атаками
+    public float attackDamage = 10f; // Урон от атаки врага
     private float agroRange = 5f; // Дистанция, при которой враг начинает атаковать игрока
     private float chaseDistance = 15f; // Дальность преследования
     private float shootingRange = 10f; // Максимальная дистанция для стрельбы
@@ -14,6 +15,8 @@ public class Robot : Enemy_1
     public bool isAttacking = false;
     public bool isReturning = false;
     public bool isMoving = false;
+    public float Health;
+    private bool isDie;
     private bool Left_1;
     private bool Right_1;
     private bool Left;
@@ -21,11 +24,11 @@ public class Robot : Enemy_1
     private bool Up;
     private bool Down;
     private bool Idle;
+    private float lastAttackTime; // Время последней атаки
 
     public Transform shootpoint;
 
     private Transform player; // Ссылка на игрока
-    private float lastAttackTime; // Время последней атаки
     private Rigidbody2D rb; // Rigidbody2D для движения
     private Animator animator; //Animator для визуализации
     private Vector3 startingPosition; // Начальная позиция врага
@@ -36,6 +39,7 @@ public class Robot : Enemy_1
         player = GameObject.FindGameObjectWithTag("Player_1").transform; // Находим игрока по тегу
         rb = GetComponent<Rigidbody2D>(); // Получаем компонент Rigidbody2D
         startingPosition = transform.position; // Запоминаем начальную позицию врага
+        Health = GetComponent<Enemy_1>().health_enemy;
     }
     void FixedUpdate()
     {
@@ -58,9 +62,9 @@ public class Robot : Enemy_1
             else
             {
                 ReturnToStartingPosition();
-
             }
         }
+        Health = GetComponent<Enemy_1>().health_enemy;
     }
     void AttackPlayer()
     {
@@ -169,7 +173,7 @@ public class Robot : Enemy_1
         {
             rb.velocity = Vector2.zero;
         }
-        AnimationMove();
+        AnimationMove(player.position);
     }
     void ReturnToStartingPosition()
     {
@@ -185,9 +189,9 @@ public class Robot : Enemy_1
         {
             rb.velocity = Vector2.zero; // Останавливаемся, как только достигли начальной позиции
         }
-        AnimationMove();
+        AnimationMove(startingPosition);
     }
-    void AnimationMove()
+    void AnimationMove(Vector3 direction_point)
     {
         Left = false;
         Right = false;
@@ -196,7 +200,7 @@ public class Robot : Enemy_1
         Left_1 = false;
         Right_1 = false;
         Idle = false;
-        Vector2 distance = player.position - transform.position;
+        Vector2 distance = direction_point - transform.position;
         distanceToStart = Vector2.Distance(transform.position, startingPosition);
         if (distance.x < 0)
         {
@@ -219,6 +223,18 @@ public class Robot : Enemy_1
         animator.SetBool("At_up", Up);
         animator.SetBool("At_down", Down);
         animator.SetBool("Idle", Idle);
+    }
+    void Get_Health()
+    {
+        if (Health <= 0)
+        {
+            isDie = true;
+        }
+        else
+        {
+            isDie = true;
+        }
+        animator.SetBool("Death_1", isDie);//добавить в аниматор триггер
     }
 }
 

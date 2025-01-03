@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using System;
 using System.Net;
+using UnityEngine.InputSystem;
 
 public class Gun : MonoBehaviour
 {
@@ -39,7 +40,7 @@ public class Gun : MonoBehaviour
             Shoot();
         }
     }
-    public void Shoot()
+    private void Shoot_direction()
     {
         if (Player.Instance.IsShootingDown())
         {
@@ -57,8 +58,14 @@ public class Gun : MonoBehaviour
         {
             _shotpoint_dir = _shotpoint.right;
         }
-        if (InputControl.Instance.IsGetSpace_() == true)
+    }
+
+    public void Shoot()
+    {
+        Shoot_direction();
+        if (InputControl.Instance.IsGetSpace_())
         {
+            Shoot_direction();
             if (Time.time >= lastAttack + attackCooldown_hero)
             {
                 isAttacking = true;
@@ -67,7 +74,7 @@ public class Gun : MonoBehaviour
                 {
                     if (hit.collider.tag == "Enemy")
                     {
-                        Robot enemy = hit.collider.GetComponent<Robot>();
+                        Enemy_1 enemy = hit.collider.GetComponent<Enemy_1>();
                         Debug.Log("Attack! Damage: " + dam);
                         enemy.TakeDamage_enemy(dam);
                     }

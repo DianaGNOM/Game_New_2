@@ -1,7 +1,8 @@
 using System.Collections;
+using System.ComponentModel;
 using UnityEngine;
 
-public class Zombie : Enemy_1
+public class Zombie : MonoBehaviour
 {
     public float moveSpeed = 2f; // —корость движени€ врага
     public float attackRange = 2.5f; // ƒальность атаки
@@ -32,9 +33,11 @@ public class Zombie : Enemy_1
     public bool IsDeathLeft;
     public bool IsDeathRight;
     public bool IsStop;
+    public float Health_;
 
     private bool Up;
     private bool Down;
+    private bool isDie_;
 
     void Start()
     {
@@ -42,6 +45,7 @@ public class Zombie : Enemy_1
         rb = GetComponent<Rigidbody2D>(); 
         startingPosition = transform.position;
         anim = GetComponent<Animator>();
+        Health_ = GetComponent<Enemy_1>().health_enemy;
     }
 
     void Update()
@@ -53,21 +57,22 @@ public class Zombie : Enemy_1
         if (distanceToPlayer < chaseDistance)
         {
             MoveTowardsPlayer();
-            Animation();
+            Animation(player.position);
 
             // ≈сли игрок близок к врагу, атакуем
             if ((distanceToPlayer < attackRange))
             {
                 AttackPlayer();
-                Animation();
+                Animation(player.position);
             }
         }
         else
         {
             // ≈сли игрок далеко, возвращаемс€ на начальную позицию
             ReturnToStartingPosition();
-            Animation();
+            Animation(startingPosition);
         }
+        Health_ = GetComponent<Enemy_1>().health_enemy;
     }
 
     void MoveTowardsPlayer()
@@ -123,7 +128,6 @@ public class Zombie : Enemy_1
         {
             Vector2 direction = (startingPosition - transform.position).normalized;
             rb.velocity = direction * moveSpeed; // ѕеремещаемс€ к начальной точке
-
             IsWalking = true;
             IsAttacking = false;
 
@@ -136,11 +140,11 @@ public class Zombie : Enemy_1
         }
     }
     //функци€ смены анимаций
-    void Animation()
+    void Animation(Vector3 direction_point)
     {
-        distance = player.position - transform.position;
+        distance = direction_point - transform.position;
         distanceToStart = Vector2.Distance(transform.position, startingPosition);
-        distanceToPlayer = Vector2.Distance(transform.position, player.position);
+        float distanceToPoint = Vector2.Distance(transform.position, direction_point);
         Up = false;
         Down = false;
         IsAttackUp = false;
@@ -227,8 +231,17 @@ public class Zombie : Enemy_1
         anim.SetBool("Down_a", IsAttackDown);
         anim.SetBool("Left_a", IsAttackLeft);
         anim.SetBool("Right_a", IsAttackRight);
-        //код дл€ перехода к анимации смерти ещЄ не придуман
-        //отдельно код дл€ движени€ к герою и возвращению к начальной точке
-        //попробовать через координаты игрока и врага
+    }
+    void Get_Health()
+    {
+        if (Health_ <= 0)
+        {
+            isDie_ = true;
+        }
+        else
+        {
+            isDie_ = true;
+        }
+        anim.SetBool("Death_2", isDie_);//добавить в аниматор триггер
     }
 }

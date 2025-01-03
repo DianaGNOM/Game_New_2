@@ -6,11 +6,15 @@ public class InputControl : MonoBehaviour
 {
     public static InputControl Instance { get; private set; }
     private bool isGetSpace;
+    private bool isAlreadyGetSpace;
     public bool IsGetSpace_()
     {
         return isGetSpace;
     }
-
+    public bool IsAlreadyGetSpace_()
+    {
+        return isAlreadyGetSpace;
+    }
     private void Awake()
     {
         Instance = this;
